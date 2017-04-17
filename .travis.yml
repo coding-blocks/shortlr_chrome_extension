@@ -1,10 +1,26 @@
-sudo: true
-language: "node_js"
-script: "echo 'Adding release'"
+sudo: required
+dist: trusty
+language: node_js
+addons:
+  firefox: latest
+  apt:
+    sources:
+    - google-chrome
+    packages:
+    - google-chrome-stable fluxbox
+before_script:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- fluxbox >/dev/null 2>&1 &
+script: echo 'Adding release'
+before_deploy:
+- google-chrome --pack-extension=src
+- mv src.crx extension.crx
 deploy:
   provider: releases
-  api_key: # Add API key here
-  file_glob: "true"
+  api_key:
+    secure: # Add secure key here, to fetch secure key run : travis encrypt [API Key]
+  file: extension.crx
   skip_cleanup: true
   on:
     tags: true
